@@ -1,4 +1,4 @@
-using FinTrackHub.Data;
+﻿using FinTrackHub.Data;
 using FinTrackHub.Identity;
 using FinTrackHub.Interfaces;
 using FinTrackHub.Repositories;
@@ -30,7 +30,6 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-
 // Add services to the container.
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<AuthService>();
@@ -38,17 +37,14 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<IAccountGroupTypeRepository, AccountGroupTypeRepository>();
 builder.Services.AddScoped<IAccountGroupTypeService, AccountGroupTypeService>();
 
-//builder.Services.AddScoped<IAccountGroupRepository, AccountGroupRepository>();
-//builder.Services.AddScoped<IAccountGroupService, AccountGroupService>();
-
-
+// Uncomment when needed
+// builder.Services.AddScoped<IAccountGroupRepository, AccountGroupRepository>();
+// builder.Services.AddScoped<IAccountGroupService, AccountGroupService>();
 
 // Add JWT authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var key = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]);
 
-
-// for token authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -77,12 +73,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Test API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "FinTrack API", Version = "v1" });
 
     var securityScheme = new OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Description = "Enter the JWT token like this: Bearer {yaseeen}",
+        Description = "Enter the JWT token like this: Bearer {your_token}",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.Http,
         Scheme = "Bearer",
@@ -140,11 +136,16 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-
-
+// Add HTTPS redirection only in development/local
+// app.UseHttpsRedirection();
 
 app.UseAuthentication(); // Enable authentication middleware
 app.UseAuthorization();  // Enable authorization middleware
 
 app.MapControllers();
+
+// 👇 Important for Render: Bind to the PORT from environment
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+app.Urls.Add($"http://*:{port}");
+
 app.Run();
