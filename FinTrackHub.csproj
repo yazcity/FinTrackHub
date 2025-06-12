@@ -25,4 +25,9 @@
     <Folder Include="Models\DTOs\Requests\" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <None Include="FinTrackHub.sln" />
+  </ItemGroup>
+
 </Project>

@@ -30,20 +30,20 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
 # Copy project file and restore dependencies
-COPY ["YazzApi.csproj", "."]
-RUN dotnet restore "./YazzApi.csproj"
+COPY ["FinTrackHub.csproj", "."]
+RUN dotnet restore "./FinTrackHub.csproj"
 
 # Copy the rest of the app source code
 COPY . .
 WORKDIR "/src/."
 
 # Build the app
-RUN dotnet build "./YazzApi.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./FinTrackHub.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Publish the app to a folder
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./YazzApi.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./FinTrackHub.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # Final runtime image
 FROM base AS final
@@ -53,5 +53,5 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 
 # Run the app
-ENTRYPOINT ["dotnet", "YazzApi.dll"]
+ENTRYPOINT ["dotnet", "FinTrackHub.dll"]
 >>>>>>> 948ea83 (final code)
